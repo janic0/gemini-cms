@@ -30,8 +30,12 @@ func main() {
 				views.AdminDashboard(w, r)
 			} else if path == "add-page" {
 				actions.AddPage(w, r)
-			} else if strings.HasPrefix(path, "edit-page/") {
-				views.EditPage(w, r, path[len("edit-page"):])
+			} else if strings.HasPrefix(path, "edit-page") {
+				relativePath := path[len("edit-page"):]
+				if relativePath == "" {
+					relativePath = "/"
+				}
+				views.EditPage(w, r, relativePath)
 			} else if strings.HasPrefix(path, "page/") {
 				pageSuffixes := map[string]func(w *gemini.Response, r *gemini.Request, path string){
 					"/enable":    actions.EnablePage,
