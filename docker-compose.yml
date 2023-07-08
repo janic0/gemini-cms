@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  db:
+    image: redis:alpine3.18
+    restart: unless-stopped
+    command: redis-server
+    volumes:
+      - db:/db
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - 1965:1965
+    environment:
+      REDIS_HOST: db
+      ADMIN_PASSWORD: $ADMIN_PASSWORD
+volumes:
+  db:
