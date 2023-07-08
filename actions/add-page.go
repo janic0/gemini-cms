@@ -17,6 +17,9 @@ func AddPage(w *gemini.Response, r *gemini.Request) {
 		return
 	}
 	input = strings.TrimRight(input, "/")
+	if input == "" {
+		input = "/"
+	}
 	err := redis.Client.RPush("page:"+input, "disabled", "# "+input).Err()
 	if err != nil {
 		w.SetStatus(gemini.StatusTemporaryFailure, "Failed to create page.")

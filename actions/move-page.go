@@ -17,6 +17,9 @@ func MovePage(w *gemini.Response, r *gemini.Request, path string) {
 		return
 	}
 	input = strings.TrimRight(input, "/")
+	if input == "" {
+		input = "/"
+	}
 	value, err := redis.Client.RenameNX("page:"+path, "page:"+input).Result()
 	if err != nil {
 		w.SetStatus(gemini.StatusTemporaryFailure, "Failed to move page.")

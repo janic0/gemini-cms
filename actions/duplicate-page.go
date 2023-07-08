@@ -17,9 +17,10 @@ func DuplicatePage(w *gemini.Response, r *gemini.Request, path string) {
 		return
 	}
 	input = strings.TrimRight(input, "/")
+	if input == "" {
+		input = "/"
+	}
 	value, err := redis.Client.LRange("page:"+path, 0, -1).Result()
-	fmt.Print("page:" + path)
-	fmt.Print(value)
 	if err != nil {
 		w.SetStatus(gemini.StatusTemporaryFailure, "Failed to read page.")
 		w.SendStatus()
