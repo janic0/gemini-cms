@@ -1,5 +1,11 @@
 package redis
 
-import "github.com/go-redis/redis"
+import (
+	"os"
 
-var Client = redis.NewClient(&redis.Options{})
+	"github.com/go-redis/redis"
+)
+
+var Client = redis.NewClient(&redis.Options{
+	Addr: os.Getenv("REDIS_URI"),
+})

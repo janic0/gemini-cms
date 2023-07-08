@@ -13,7 +13,7 @@ services:
     ports:
       - 1965:1965
     environment:
-      REDIS_HOST: db
+      REDIS_URI: db:6379
       ADMIN_PASSWORD: $ADMIN_PASSWORD
 volumes:
   db:
