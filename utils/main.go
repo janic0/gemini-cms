@@ -36,3 +36,11 @@ func EscapePathSegments(path string) string {
 	}
 	return strings.Join(segments, "/")
 }
+
+func SafeTrimRight(path string) string {
+	result := strings.TrimRight(path, "/")
+	if len(result) == 0 {
+		return "/"
+	}
+	return result
+}

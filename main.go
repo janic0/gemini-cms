@@ -25,18 +25,18 @@ func main() {
 		} else if strings.HasPrefix(r.URL.Path, adminUrl) || strings.HasPrefix(r.URL.Path, fmt.Sprintf("/%s/admin", utils.LastAdminSession)) {
 			utils.LastAdminSession = utils.AdminSession
 			utils.AdminSession = uuid.NewString()
-			path := strings.Trim(r.URL.Path[len(adminUrl):], "/")
-			if path == "" {
+			path := utils.SafeTrimRight(r.URL.Path[len(adminUrl):])
+			if strings.TrimLeft(path, "/") == "" {
 				views.AdminDashboard(w, r)
-			} else if path == "add-page" {
+			} else if path == "/add-page" {
 				actions.AddPage(w, r)
-			} else if strings.HasPrefix(path, "edit-page") {
-				relativePath := path[len("edit-page"):]
+			} else if strings.HasPrefix(path, "/edit-page") {
+				relativePath := path[len("/edit-page"):]
 				if relativePath == "" {
 					relativePath = "/"
 				}
 				views.EditPage(w, r, relativePath)
-			} else if strings.HasPrefix(path, "page/") {
+			} else if strings.HasPrefix(path, "/page/") {
 				pageSuffixes := map[string]func(w *gemini.Response, r *gemini.Request, path string){
 					"/enable":    actions.EnablePage,
 					"/disable":   actions.DisablePage,
@@ -47,7 +47,7 @@ func main() {
 				}
 				for suffix, handler := range pageSuffixes {
 					if strings.HasSuffix(path, suffix) {
-						page := path[len("page") : len(path)-len(suffix)]
+						page := path[len("/page") : len(path)-len(suffix)]
 						handler(w, r, page)
 						return
 					}
@@ -64,7 +64,7 @@ func main() {
 						if segments[len(segments)-3] != "blocks" {
 							return
 						}
-						pagePath := "/" + strings.Join(segments[1:len(segments)-3], "/")
+						pagePath := "/" + strings.Join(segments[2:len(segments)-3], "/")
 						blockIndexStr := segments[len(segments)-2]
 						blockIndex, err := strconv.Atoi(blockIndexStr)
 						if err != nil {
@@ -79,7 +79,7 @@ func main() {
 				w.SendStatus()
 			}
 		} else {
-			truncatedPath := strings.TrimRight(r.URL.Path, "/")
+			truncatedPath := utils.SafeTrimRight(r.URL.Path)
 			content, err := generators.GetPage(truncatedPath)
 			if err != nil {
 				w.SetStatus(51, "Page not found.")
